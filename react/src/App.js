@@ -1,19 +1,35 @@
-import logo from './logo.svg';
+import React from 'react';
+import { AuthProvider } from './context/AuthContext';
+import { Router, Route } from './utils/router';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import Profile from './pages/Profile';
 import ErrorBoundary from './ErrorBoundary';
 import './App.css';
 
 function App() {
   return (
     <ErrorBoundary>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Шаблон React успешно развернут, <br />
-            Ждите обновлений от AI :)
-          </p>
-        </header>
-      </div>
+      <AuthProvider>
+        <Router>
+          <Route path="/register">
+            <Register />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/forgot-password">
+            <ForgotPassword />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
+          <Route path="/">
+            <Login />
+          </Route>
+        </Router>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
