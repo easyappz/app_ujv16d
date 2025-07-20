@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from '../utils/router';
-import { instance } from '../api/axios';
+import { login } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/ui/Layout';
 import Form from '../components/ui/Form';
@@ -16,7 +16,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,13 +29,13 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await instance.post('/api/login', formData);
-      if (response.data.token) {
-        login(response.data.user, response.data.token);
+      const response = await login(formData);
+      if (response.token) {
+        authLogin(response.user, response.token);
         navigate('/profile');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Ошибка при входе');
+      setError(err.message || 'Ошибка при входе');
     } finally {
       setLoading(false);
     }

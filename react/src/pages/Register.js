@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from '../utils/router';
-import { instance } from '../api/axios';
+import { register } from '../api/auth';
+import { useAuth } from '../context/AuthContext';
 import Layout from '../components/ui/Layout';
 import Form from '../components/ui/Form';
 import Input from '../components/ui/Input';
@@ -16,6 +17,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,12 +30,13 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await instance.post('/api/register', formData);
-      if (response.data.token) {
+      const response = await register(formData);
+      if (response.token) {
+        login(response.user, response.token);
         navigate('/profile');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Ошибка при регистрации');
+      setError(err.message || 'Ошибка при регистрации');
     } finally {
       setLoading(false);
     }

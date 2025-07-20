@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from '../utils/router';
-import { instance } from '../api/axios';
+import { forgotPassword } from '../api/auth';
 import Layout from '../components/ui/Layout';
 import Form from '../components/ui/Form';
 import Input from '../components/ui/Input';
@@ -21,11 +21,11 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await instance.post('/api/forgot-password', { email });
-      setMessage(response.data.message || 'Инструкции отправлены на вашу почту');
+      const response = await forgotPassword({ email });
+      setMessage(response.message || 'Инструкции отправлены на вашу почту');
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Ошибка при отправке запроса');
+      setError(err.message || 'Ошибка при отправке запроса');
     } finally {
       setLoading(false);
     }

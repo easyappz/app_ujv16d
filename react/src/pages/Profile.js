@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from '../utils/router';
-import { instance } from '../api/axios';
+import { getProfile } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/ui/Layout';
 import Button from '../components/ui/Button';
@@ -17,14 +17,10 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await instance.get('/api/profile', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        });
-        setUserData(response.data.user);
+        const response = await getProfile();
+        setUserData(response.user);
       } catch (err) {
-        setError('Ошибка при загрузке профиля');
+        setError(err.message || 'Ошибка при загрузке профиля');
         if (err.response?.status === 401) {
           logout();
           navigate('/login');
