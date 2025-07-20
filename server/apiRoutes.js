@@ -1,8 +1,7 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const { mongoDb } = require('./db');
 const userSchema = require('./models/User');
-const { generateToken } = require('./utils/jwt');
+const { generateToken } = require('./utils/auth');
 const authMiddleware = require('./middleware/auth');
 
 const router = express.Router();
@@ -26,7 +25,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    // Create new user
+    // Create new user (password will be hashed by pre-save middleware)
     const newUser = new User({ email, password, name });
     await newUser.save();
 

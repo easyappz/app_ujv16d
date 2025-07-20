@@ -1,45 +1,50 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const { hashPassword, comparePasswords } = require('../utils/auth');
 
+// User Schema definition
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
     trim: true,
-    lowercase: true,
+    lowercase: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
   name: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
-// Pre-save hook to hash password before saving
+// Pre-save middleware to hash password before saving
 userSchema.pre('save', async function(next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
+  try {
+    if (this.isModified('password')) {
+      this.password = await hashPassword(this.password);
+    }
+    this.updatedAt = Date.now();
+    next();
+  } catch (error) {
+    next(error);
   }
-  this.updatedAt = Date.now();
-  next();
 });
 
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return await comparePasswords(candidatePassword, this.password);
 };
 
 module.exports = userSchema;
